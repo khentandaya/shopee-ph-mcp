@@ -9,6 +9,9 @@
  * (e.g. Philippines) would otherwise leak into LOCALE-dependent output.
  */
 import assert from 'node:assert/strict';
+import { execFile } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import { promisify } from 'node:util';
 import { flattenSearchItems } from '../src/tools/search.js';
 import { formatPrice } from '../src/utils/price.js';
 import {
@@ -877,6 +880,21 @@ test('requireLogin: throws the login prompt error when signed out', async () => 
   await assert.rejects(() => requireLogin(async () => false), ShopeeAuthRequiredError);
 });
 
+test('lazy account sync: injected login checks do not enable account tools', async () => {
+  setLoggedIn(false);
+  await requireLogin(async () => true);
+  assert.equal(accountModeActive(), false);
+  await shopeeCapture(
+    'https://x',
+    'search/search_items',
+    undefined,
+    false,
+    async () => ({ error: 0 }),
+    async () => true,
+  );
+  assert.equal(accountModeActive(), false);
+});
+
 // ─── account mode ────────────────────────────────────────────────────────────
 
 test('accountToolsSetting: defaults to auto, "off"/"false"/"0" turn it off', () => {
@@ -1097,6 +1115,28 @@ test('findCartItem: by item, by item+model, and ambiguous multi-variant lines', 
   assert.equal(ambiguous.item, undefined);
   assert.equal(ambiguous.matches.length, 2);
   assert.equal(findCartItem(blocks, '3').matches.length, 0);
+});
+
+test('MCP startup and tools/list are browser-free; explicit login updates account mode', async () => {
+  await import('./startup.js');
+});
+
+test('Windows duplicate MCP processes launch only one browser and release ownership', async () => {
+  await import('./duplicate-browser.js');
+});
+
+test('browser launch failure and window closure release the profile for retry', async () => {
+  await promisify(execFile)(
+    process.execPath,
+    [
+      '--import',
+      'tsx',
+      '--import',
+      new URL('./fixtures/mock-browser.mjs', import.meta.url).href,
+      fileURLToPath(new URL('./session-lifecycle.ts', import.meta.url)),
+    ],
+    { timeout: 10000, windowsHide: true },
+  );
 });
 
 await runTests();

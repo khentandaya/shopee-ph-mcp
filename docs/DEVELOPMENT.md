@@ -32,6 +32,10 @@ Installation requires access to the package registry. `--ignore-scripts` skips d
 
 `test/unit.ts` checks parsing, formatting, region mappings, authentication handling and account-tool visibility. `test/setup.ts` deliberately pins Indonesian fixture settings so a local Philippines `.env` does not change expected fixture output; the suite also includes Philippines currency and region cases. It does not prove live Shopee availability.
 
+The unit suite also runs `test/startup.ts` against the stdio server with the browser launcher replaced by `test/fixtures/mock-browser.mjs`. It verifies that initialization and tool listing launch no browser, while an explicit login check enables account tools only in `auto` mode.
+
+On Windows, `test/duplicate-browser.ts` checks eight competing MCP processes and ownership transfer. `test/session-lifecycle.ts` checks failed-launch retries, reuse within one process, blank-tab cleanup and recovery after window closure. These tests use isolated empty profiles and a mocked launcher; they do not open Chromium or read your saved login.
+
 `npm test` starts the source MCP server and calls live tools. It requires a working display and browser, and uses the configured profile. Configure the Philippines domain and profile as described in [Configuration](./CONFIGURATION.md) first. With account mode enabled and a detected login, it also reads orders, cart, vouchers, coins and notifications. It does **not** invoke account-changing tools. Set `SHOPEE_ACCOUNT_TOOLS=off` to exclude these account reads.
 
 A smoke-test pass may mean a clean login prompt was returned; it is not necessarily an authenticated product-data success. Verify which tools returned real data when reporting live results. Do not commit smoke-test output containing account information. CI runs the offline checks only.

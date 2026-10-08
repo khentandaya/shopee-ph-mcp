@@ -3,6 +3,7 @@ import 'dotenv/config';
 import os from 'node:os';
 import path from 'node:path';
 import type { BrowserContext, Page, Response } from 'playwright';
+import { acquireWindowsProfileLock } from './profile-lock.js';
 
 // ─── Configuration ────────────────────────────────────────────────────────────
 
@@ -76,21 +77,40 @@ function debug(msg: string): void {
 let contextPromise: Promise<BrowserContext> | null = null;
 
 async function createContext(headless: boolean): Promise<BrowserContext> {
-  debug(
-    `Launching CloakBrowser (headless=${headless}, locale=${LOCALE}, tz=${TIMEZONE}) ` +
-      `with profile: ${PROFILE_DIR}`,
-  );
-  const ctx = (await launchPersistentContext({
-    userDataDir: PROFILE_DIR,
-    headless,
-    userAgent: USER_AGENT,
-    locale: LOCALE,
-    timezone: TIMEZONE,
-    viewport: { width: 1366, height: 768 },
-    humanize: true,
-    args: ['--no-sandbox', '--disable-dev-shm-usage'],
-  })) as unknown as BrowserContext;
-  return ctx;
+  const releaseProfile = await acquireWindowsProfileLock(PROFILE_DIR);
+  let ctx: BrowserContext | undefined;
+  try {
+    debug(
+      `Launching CloakBrowser (headless=${headless}, locale=${LOCALE}, tz=${TIMEZONE}) ` +
+        `with profile: ${PROFILE_DIR}`,
+    );
+    ctx = (await launchPersistentContext({
+      userDataDir: PROFILE_DIR,
+      headless,
+      userAgent: USER_AGENT,
+      locale: LOCALE,
+      timezone: TIMEZONE,
+      viewport: { width: 1366, height: 768 },
+      humanize: true,
+      args: ['--no-sandbox', '--disable-dev-shm-usage'],
+    })) as unknown as BrowserContext;
+    const pending = contextPromise;
+    ctx.once('close', () => {
+      if (contextPromise === pending) contextPromise = null;
+      void releaseProfile().catch((error) => debug(`Profile guard cleanup failed: ${error}`));
+    });
+    // Failed competing Chromium launches can leave blank tabs in the saved session.
+    const pages = ctx.pages().filter((page) => !page.isClosed());
+    const keep = pages.find((page) => page.url().startsWith(BASE_URL)) ?? pages[0];
+    for (const page of pages) {
+      if (page !== keep && page.url() === 'about:blank') await page.close();
+    }
+    return ctx;
+  } catch (error) {
+    if (ctx) await ctx.close().catch(() => {});
+    await releaseProfile();
+    throw error;
+  }
 }
 
 /**
@@ -104,8 +124,8 @@ async function createContext(headless: boolean): Promise<BrowserContext> {
  */
 export async function getContext(headless: boolean = HEADLESS): Promise<BrowserContext> {
   if (!contextPromise) {
-    contextPromise = createContext(headless).catch((err: unknown) => {
-      contextPromise = null;
+    const pending = createContext(headless).catch((err: unknown) => {
+      if (contextPromise === pending) contextPromise = null;
       if (isProfileLockedError(err)) {
         throw new Error(
           `Shopee browser profile is already in use (${PROFILE_DIR}). ` +
@@ -114,6 +134,7 @@ export async function getContext(headless: boolean = HEADLESS): Promise<BrowserC
       }
       throw err;
     });
+    contextPromise = pending;
   }
   return contextPromise;
 }
@@ -130,7 +151,8 @@ export function isProfileLockedError(err: unknown): boolean {
 /** The single reused page. */
 async function getPage(): Promise<Page> {
   const ctx = await getContext();
-  const existing = ctx.pages().find((p) => !p.isClosed());
+  const pages = ctx.pages().filter((page) => !page.isClosed());
+  const existing = pages.find((page) => page.url().startsWith(BASE_URL)) ?? pages[0];
   return existing ?? (await ctx.newPage());
 }
 
@@ -409,9 +431,13 @@ export async function isLoggedIn(): Promise<boolean> {
 
 /** Cleanly close the browser (used on shutdown / after login). */
 export async function closeContext(): Promise<void> {
-  if (contextPromise) {
-    const ctx = await contextPromise;
-    await ctx.close();
-    contextPromise = null;
+  const pending = contextPromise;
+  if (pending) {
+    try {
+      const ctx = await pending;
+      await ctx.close();
+    } finally {
+      if (contextPromise === pending) contextPromise = null;
+    }
   }
 }

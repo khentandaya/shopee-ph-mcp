@@ -1,5 +1,6 @@
 import { captureJson, isLoggedIn, BASE_URL } from '../browser/session.js';
 import type { CaptureOptions } from '../browser/session.js';
+import { setLoggedIn } from '../account-mode.js';
 
 type CaptureFn = <T>(pageUrl: string, opts: CaptureOptions) => Promise<T>;
 type LoginCheckFn = () => Promise<boolean>;
@@ -56,6 +57,8 @@ export async function shopeeCapture<T extends { error?: number; error_msg?: stri
   // — long enough that MCP clients abandon the request first and show their own
   // "request timed out" instead of our instructions.
   if (!isRetry && !(await checkLogin())) throw new ShopeeAuthRequiredError(apiMatch);
+  // Only a real cookie check enables account tools; anonymous lookups don't.
+  if (!isRetry && checkLogin === isLoggedIn) setLoggedIn(true);
 
   let json: T;
   try {
@@ -101,4 +104,5 @@ export function shopeeUrl(pathAndQuery: string): string {
  */
 export async function requireLogin(checkLogin: LoginCheckFn = isLoggedIn): Promise<void> {
   if (!(await checkLogin())) throw new ShopeeAuthRequiredError();
+  if (checkLogin === isLoggedIn) setLoggedIn(true);
 }

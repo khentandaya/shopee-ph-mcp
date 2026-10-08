@@ -65,6 +65,10 @@ On Linux without a desktop display, an installed virtual display can wrap the co
 
 ## Authentication and timeouts
 
+Connecting the MCP server and listing tools do not launch a browser. The first browser-backed tool call opens it. With `SHOPEE_ACCOUNT_TOOLS=auto`, account tools start hidden and appear after `check_login_status` or another authenticated tool verifies the session; the client is notified to refresh its tool list.
+
+On Windows, a process guard prevents multiple MCP or login processes from launching browsers for the same profile. Competing calls return a profile-in-use error without opening another window. Ownership is released when the browser closes or its owning process exits. Existing login pages are reused; surplus `about:blank` tabs are closed without changing cookies or other pages. OpenCode can still start duplicate MCP processes, so configure one Shopee instance per profile.
+
 Use `check_login_status` to check the profile. This is a best-effort cookie check, so an expired or rejected session can still require another login. Most product tools fail promptly when signed out; shop profiles may work anonymously.
 
 Calls navigate a real browser and can take tens of seconds. Client timeouts must allow for navigation, page interactions and occasional retries. Exact variant stock uses a separate round trip per selection and has an internal time budget; increasing a client's timeout does not remove that budget. Cached reads can return sooner.

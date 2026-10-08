@@ -15,7 +15,7 @@ import { registerFlashSaleTools } from './tools/flashsale.js';
 import { registerCartTools } from './tools/cart.js';
 import { registerAccountTools } from './tools/account.js';
 import { registerActionTools } from './tools/actions.js';
-import { accountToolsSetting, initAccountMode, refreshAccountMode } from './account-mode.js';
+import { initAccountMode } from './account-mode.js';
 import { closeContext, DEBUG } from './browser/session.js';
 
 // Read the version from package.json at runtime so it can't drift from the
@@ -51,9 +51,8 @@ async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
 
-  // Check the session in the background so a logged-in user gets the account
-  // tools without calling anything first; clients are notified via list_changed.
-  if (accountToolsSetting() === 'auto') void refreshAccountMode();
+  // Keep connections and tools/list browser-free. Actual login checks reveal
+  // account tools on first use and notify the client via tools/list_changed.
 
   if (DEBUG) {
     process.stderr.write('[shopee-mcp] Server started via stdio (browser-backed discovery)\n');

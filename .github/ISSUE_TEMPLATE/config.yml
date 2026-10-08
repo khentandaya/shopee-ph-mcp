@@ -1,8 +1,5 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Security vulnerability
-    url: https://github.com/bintangtimurlangit/shopee-mcp/security/advisories/new
-    about: Please report security issues privately — do not open a public issue.
-  - name: Question or discussion
-    url: https://github.com/bintangtimurlangit/shopee-mcp/issues
-    about: For usage questions and design discussion, open a regular issue.
+  - name: Security guidance and private reporting
+    url: https://github.com/khentandaya/shopee-ph-mcp/blob/main/SECURITY.md
+    about: Read the reporting instructions before disclosing a security issue. Never post credentials or browser data.

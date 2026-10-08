@@ -1,14 +1,14 @@
-# shopee-mcp documentation
+# Shopee Philippines MCP documentation
 
-**shopee-mcp** is a [Model Context Protocol](https://modelcontextprotocol.io/) server for **public discovery** on Shopee — product search, detail, variants, reviews, shops and flash sales — plus, when logged in, experimental account tools — through a logged-in browser session — over **stdio**, for Claude Code, Claude Desktop, Cursor, and other MCP hosts. Discovery only; no seller features.
+This unofficial fork configures the upstream Shopee MCP server for the Philippines through a persistent browser session. It offers product discovery and optional account tools over stdio.
 
-| Document                            | Description                                                                                                    |
-| ----------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| [Configuration](./CONFIGURATION.md) | Env vars, tool timings and request timeouts, `mcpServers` JSON, `xvfb`, per-client setup                       |
-| [Development](./DEVELOPMENT.md)     | Scripts, build, login, the live smoke test, why a browser is required                                          |
-| [Releases](./RELEASES.md)           | SemVer, npm tags, git tags, publishing, [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) |
-| [Changelog](../CHANGELOG.md)        | Version history ([Keep a Changelog](https://keepachangelog.com/en/1.1.0/))                                     |
+| Document                            | Purpose                                              |
+| ----------------------------------- | ---------------------------------------------------- |
+| [README](../README.md)              | Installation, tools and upstream attribution.        |
+| [Configuration](./CONFIGURATION.md) | Philippines settings, profile paths and MCP setup.   |
+| [Development](./DEVELOPMENT.md)     | Build, offline checks and optional live testing.     |
+| [Releases](./RELEASES.md)           | Source distribution and versioning.                  |
+| [Changelog](../CHANGELOG.md)        | Changes, including retained upstream history.        |
+| [Security](../SECURITY.md)          | Session handling, account permissions and reporting. |
 
-**Installation** is in the [root README](../README.md#installation).
-
-**Community, security, license:** [CONTRIBUTING.md](../CONTRIBUTING.md) · [SECURITY.md](../SECURITY.md) · [Code of Conduct](../CODE_OF_CONDUCT.md) · [MIT License](../LICENSE)
+[Contributing](../CONTRIBUTING.md) · [Code of conduct](../CODE_OF_CONDUCT.md) · [MIT license](../LICENSE)

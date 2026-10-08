@@ -1,21 +1,18 @@
 {
-  "name": "@bintangtimurlangit/shopee-mcp",
+  "name": "shopee-ph-mcp",
   "version": "0.3.0",
-  "description": "An MCP server for exploring Shopee — product search and prices via an authenticated browser session. Discovery only, no seller features.",
+  "description": "Unofficial Shopee Philippines MCP server with PHP prices and locale-aware discovery through your own browser session.",
   "author": "bintangtimurlangit",
   "license": "MIT",
   "type": "module",
-  "publishConfig": {
-    "access": "public"
-  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bintangtimurlangit/shopee-mcp.git"
+    "url": "git+https://github.com/khentandaya/shopee-ph-mcp.git"
   },
   "bugs": {
-    "url": "https://github.com/bintangtimurlangit/shopee-mcp/issues"
+    "url": "https://github.com/khentandaya/shopee-ph-mcp/issues"
   },
-  "homepage": "https://github.com/bintangtimurlangit/shopee-mcp#readme",
+  "homepage": "https://github.com/khentandaya/shopee-ph-mcp#readme",
   "bin": {
     "shopee-mcp": "build/index.js",
     "shopee-mcp-login": "build/login.js"
@@ -34,8 +31,7 @@
     "format:check": "prettier --check .",
     "test": "tsx test/smoke.ts",
     "test:unit": "tsx --import ./test/setup.ts test/unit.ts",
-    "prepare": "husky",
-    "prepublishOnly": "npm run build"
+    "prepare": "husky"
   },
   "lint-staged": {
     "*.{ts,js,json,md,yml,yaml}": "prettier --write",
@@ -49,13 +45,14 @@
     "LICENSE",
     "CONTRIBUTING.md",
     "SECURITY.md",
-    "CODE_OF_CONDUCT.md"
+    "CODE_OF_CONDUCT.md",
+    "ATTRIBUTION.md"
   ],
   "keywords": [
     "mcp",
     "model-context-protocol",
     "shopee",
-    "indonesia",
+    "philippines",
     "ecommerce",
     "marketplace",
     "product-search",
@@ -83,6 +80,7 @@
     "typescript-eslint": "^8.65.0"
   },
   "engines": {
-    "node": ">=18.0.0"
-  }
+    "node": ">=24.0.0"
+  },
+  "private": true
 }

@@ -7,6 +7,6 @@ This project adopts the **[Contributor Covenant](https://www.contributor-covenan
 ## Reporting
 
 - For **security-sensitive** issues, follow [SECURITY.md](./SECURITY.md).
-- For **conduct** concerns, contact the maintainers via GitHub (e.g. a direct message if available) or open a discussion/issue as appropriate for the situation.
+- For **conduct** concerns, use a private contact listed on a maintainer's GitHub profile. If none is listed, request a private reporting channel in an issue without posting personal information or details of the incident.
 
 Unacceptable behavior may result in temporary or permanent exclusion from project spaces.

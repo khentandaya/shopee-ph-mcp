@@ -1,7 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { shopeeCapture, shopeeUrl } from '../api/client.js';
-import { BASE_URL, CURRENCY } from '../browser/session.js';
+import { BASE_URL, CURRENCY, LOCALE } from '../browser/session.js';
 import { cache } from '../utils/cache.js';
 import { withErrorHandling } from '../utils/errors.js';
 import { formatPrice } from '../utils/price.js';
@@ -128,7 +128,7 @@ export function formatResultList(items: SearchResult[], opts: ResultListOptions)
 
   const lines: string[] = [
     opts.title,
-    `📊 ${totalCount.toLocaleString('id-ID')} total products | Page ${page}${totalPages > 1 ? `/${totalPages}` : ''}`,
+    `📊 ${totalCount.toLocaleString(LOCALE)} total products | Page ${page}${totalPages > 1 ? `/${totalPages}` : ''}`,
     ``,
   ];
 
@@ -139,7 +139,7 @@ export function formatResultList(items: SearchResult[], opts: ResultListOptions)
     const soldLabel = r.soldText
       ? r.soldText
       : r.sold
-        ? `${r.sold.toLocaleString('id-ID')} sold`
+        ? `${r.sold.toLocaleString(LOCALE)} sold`
         : '';
     const soldText = soldLabel ? ` | 📦 ${soldLabel}` : '';
     const official = r.isOfficialShop ? ' [Shopee Mall]' : '';

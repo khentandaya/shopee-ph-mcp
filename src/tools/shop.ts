@@ -1,7 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { shopeeCapture, shopeeUrl } from '../api/client.js';
-import { BASE_URL, captureJson } from '../browser/session.js';
+import { BASE_URL, LOCALE, captureJson } from '../browser/session.js';
 import { cache } from '../utils/cache.js';
 import { withErrorHandling, truncate } from '../utils/errors.js';
 import { flattenSearchItems, formatResultList } from './search.js';
@@ -39,9 +39,9 @@ export function formatShop(s: ShopBase, now: number = Date.now()): string {
     '',
     `📊 **Stats:**`,
     s.rating_star ? `  ⭐ Shop rating: ${s.rating_star.toFixed(2)}` : '',
-    s.item_count !== undefined ? `  📦 Products: ${s.item_count.toLocaleString('id-ID')}` : '',
+    s.item_count !== undefined ? `  📦 Products: ${s.item_count.toLocaleString(LOCALE)}` : '',
     s.follower_count !== undefined
-      ? `  👥 Followers: ${s.follower_count.toLocaleString('id-ID')}`
+      ? `  👥 Followers: ${s.follower_count.toLocaleString(LOCALE)}`
       : '',
     s.response_rate !== undefined
       ? `  💬 Chat response: ${s.response_rate}%${s.response_time ? ` (within ~${formatDuration(s.response_time)})` : ''}`

@@ -3,6 +3,10 @@
  * Unlike test/smoke.ts (live), this is safe to run in CI on every push.
  *
  * Run with: npm run test:unit
+ *
+ * NOTE: deterministic Indonesian defaults are pre-set via test/setup.ts
+ * (tsx --import), because static imports are hoisted and a local .env
+ * (e.g. Philippines) would otherwise leak into LOCALE-dependent output.
  */
 import assert from 'node:assert/strict';
 import { flattenSearchItems } from '../src/tools/search.js';
@@ -41,7 +45,7 @@ import type { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { buildVariantRows } from '../src/tools/variants.js';
 import { shopeeCapture, requireLogin, ShopeeAuthRequiredError } from '../src/api/client.js';
 import { cache } from '../src/utils/cache.js';
-import { regionFor } from '../src/browser/session.js';
+import { regionFor, isProfileLockedError } from '../src/browser/session.js';
 import type { SearchItem, ItemBasic, PdpModel, PdpItem, Rating } from '../src/api/types.js';
 
 let failures = 0;
@@ -290,6 +294,11 @@ test('formatPrice: renders TWD with NT$ and no decimals', () => {
   assert.equal(formatPrice(50000000, 'TWD'), 'NT$500');
 });
 
+test('formatPrice: renders PHP with ₱ and two decimals', () => {
+  // 15000000000 / 100000 = 150000 → formatted with en-PH locale = 150,000.00
+  assert.equal(formatPrice(15000000000, 'PHP'), '₱150,000.00');
+});
+
 test('formatPrice: falls back to "CURRENCY amount" for an unmapped currency', () => {
   assert.equal(formatPrice(500000000, 'USD'), 'USD 5.000');
 });
@@ -473,6 +482,14 @@ test('regionFor: .tw domains get Taiwanese locale/timezone/currency', () => {
   });
 });
 
+test('regionFor: .ph domains get Philippine locale/timezone/currency', () => {
+  assert.deepEqual(regionFor('shopee.ph'), {
+    locale: 'en-PH',
+    timezone: 'Asia/Manila',
+    currency: 'PHP',
+  });
+});
+
 test('regionFor: an unmapped domain falls back to the Indonesian defaults', () => {
   assert.deepEqual(regionFor('shopee.vn'), {
     locale: 'id-ID',
@@ -484,6 +501,23 @@ test('regionFor: an unmapped domain falls back to the Indonesian defaults', () =
 test('regionFor: matches on the TLD suffix, not a substring elsewhere', () => {
   // ".my" appears mid-string but the TLD is .tw — must not match Malaysia.
   assert.equal(regionFor('shopee.my-mirror.tw').currency, 'TWD');
+});
+
+// ─── isProfileLockedError (browser lifecycle) ───────────────────────────
+
+test('isProfileLockedError: recognises the Playwright already-in-use message', () => {
+  assert.equal(
+    isProfileLockedError(
+      new Error('browserType.launchPersistentContext: Opening in existing browser session.'),
+    ),
+    true,
+  );
+});
+
+test('isProfileLockedError: rejects unrelated launch failures', () => {
+  assert.equal(isProfileLockedError(new Error('Timeout 30000ms exceeded')), false);
+  assert.equal(isProfileLockedError(new Error('Executable not found')), false);
+  assert.equal(isProfileLockedError(undefined), false);
 });
 
 // ─── shopeeCapture retry-on-timeout ─────────────────────────────────────────

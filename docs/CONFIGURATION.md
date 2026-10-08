@@ -31,6 +31,7 @@ Shopee tailors its web app to the visitor's region, so the browser's locale and 
 | `.my`         | `en-MY` | `Asia/Kuala_Lumpur` | `MYR`    |
 | `.sg`         | `en-SG` | `Asia/Singapore`    | `SGD`    |
 | `.tw`         | `zh-TW` | `Asia/Taipei`       | `TWD`    |
+| `.ph`         | `en-PH` | `Asia/Manila`       | `PHP`    |
 | anything else | `id-ID` | `Asia/Jakarta`      | `IDR`    |
 
 The currency is used to render prices when Shopee's response omits a per-item currency field, which the newer search card format does.

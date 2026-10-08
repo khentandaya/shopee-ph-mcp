@@ -59,7 +59,7 @@
     "discovery"
   ],
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.29.0",
+    "@modelcontextprotocol/sdk": "^1.32.0",
     "cloakbrowser": "^0.5.5",
     "dotenv": "^17.4.2",
     "playwright": "^1.49.0",

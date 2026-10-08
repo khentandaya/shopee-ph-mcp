@@ -67,6 +67,15 @@ for (const sig of ['SIGINT', 'SIGTERM'] as const) {
   });
 }
 
+// When the host abandons us (stdin pipe closed), release the browser profile
+// so a surviving instance can use it, then exit instead of lingering as an
+// orphan. Per MCP convention a stdio server treats stdin EOF as shutdown.
+process.stdin.on('close', () => {
+  void closeContext()
+    .catch(() => {})
+    .finally(() => process.exit(0));
+});
+
 main().catch((err) => {
   process.stderr.write(`[shopee-mcp] Fatal error: ${err}\n`);
   process.exit(1);

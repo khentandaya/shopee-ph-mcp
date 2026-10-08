@@ -96,10 +96,35 @@ async function createContext(headless: boolean): Promise<BrowserContext> {
 /**
  * Get the shared browser context, launching it on first use.
  * `headless` overrides the env default (the login flow forces a visible window).
+ *
+ * A failed launch never sticks: the rejected promise is dropped so the next
+ * call retries instead of replaying a stale error forever. This matters
+ * because only one process can hold the Chromium profile at a time — a
+ * transient lock race must not brick the server permanently.
  */
 export async function getContext(headless: boolean = HEADLESS): Promise<BrowserContext> {
-  if (!contextPromise) contextPromise = createContext(headless);
+  if (!contextPromise) {
+    contextPromise = createContext(headless).catch((err: unknown) => {
+      contextPromise = null;
+      if (isProfileLockedError(err)) {
+        throw new Error(
+          `Shopee browser profile is already in use (${PROFILE_DIR}). ` +
+            `Only one instance can hold it — close the other Chromium window or stop the other server, then retry.`,
+        );
+      }
+      throw err;
+    });
+  }
   return contextPromise;
+}
+
+/**
+ * True when a browser-launch failure means another process already holds the
+ * Chromium profile (Playwright reports "Opening in existing browser session").
+ */
+export function isProfileLockedError(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err);
+  return /Opening in existing browser session|profile is already in use/i.test(msg);
 }
 
 /** The single reused page. */

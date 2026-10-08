@@ -45,7 +45,7 @@ import type { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { buildVariantRows } from '../src/tools/variants.js';
 import { shopeeCapture, requireLogin, ShopeeAuthRequiredError } from '../src/api/client.js';
 import { cache } from '../src/utils/cache.js';
-import { regionFor } from '../src/browser/session.js';
+import { regionFor, isProfileLockedError } from '../src/browser/session.js';
 import type { SearchItem, ItemBasic, PdpModel, PdpItem, Rating } from '../src/api/types.js';
 
 let failures = 0;
@@ -501,6 +501,23 @@ test('regionFor: an unmapped domain falls back to the Indonesian defaults', () =
 test('regionFor: matches on the TLD suffix, not a substring elsewhere', () => {
   // ".my" appears mid-string but the TLD is .tw — must not match Malaysia.
   assert.equal(regionFor('shopee.my-mirror.tw').currency, 'TWD');
+});
+
+// ─── isProfileLockedError (browser lifecycle) ───────────────────────────
+
+test('isProfileLockedError: recognises the Playwright already-in-use message', () => {
+  assert.equal(
+    isProfileLockedError(
+      new Error('browserType.launchPersistentContext: Opening in existing browser session.'),
+    ),
+    true,
+  );
+});
+
+test('isProfileLockedError: rejects unrelated launch failures', () => {
+  assert.equal(isProfileLockedError(new Error('Timeout 30000ms exceeded')), false);
+  assert.equal(isProfileLockedError(new Error('Executable not found')), false);
+  assert.equal(isProfileLockedError(undefined), false);
 });
 
 // ─── shopeeCapture retry-on-timeout ─────────────────────────────────────────

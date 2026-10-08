@@ -18,6 +18,7 @@
 - [ ] `npm run lint` passes
 - [ ] `npm run format:check` passes
 - [ ] `npm run typecheck` passes
+- [ ] `npm run test:unit` passes
 - [ ] `npm run build` passes
 - [ ] `npm test` (live smoke test) passes, or I've explained why it can't run
 - [ ] Docs updated (`README.md`, `docs/`) if behavior changed

@@ -2,7 +2,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { Page } from 'playwright';
 import { z } from 'zod';
 import { ShopeeAPIError, requireLogin, shopeeUrl } from '../api/client.js';
-import { BASE_URL, captureAll, waitForCollected } from '../browser/session.js';
+import { BASE_URL, LOCALE, captureAll, waitForCollected } from '../browser/session.js';
 import type { CollectedResponse } from '../browser/session.js';
 import { cache } from '../utils/cache.js';
 import { withErrorHandling, truncate } from '../utils/errors.js';
@@ -59,7 +59,7 @@ async function clickNextPage(page: Page): Promise<boolean> {
 /** "1★ 455 · 2★ 366 …" from Shopee's 1★..5★ count array. */
 export function starBreakdown(summary: RatingSummary): string {
   return [5, 4, 3, 2, 1]
-    .map((star) => `${star}★ ${(summary.rating_count[star - 1] ?? 0).toLocaleString('id-ID')}`)
+    .map((star) => `${star}★ ${(summary.rating_count[star - 1] ?? 0).toLocaleString(LOCALE)}`)
     .join(' · ');
 }
 
@@ -203,14 +203,14 @@ export function registerReviewTools(server: McpServer): void {
         const lines: string[] = [`💬 **Reviews** for product \`${ids.itemId}\``];
         if (summary) {
           lines.push(
-            `📊 ${summary.rating_total.toLocaleString('id-ID')} ratings | ${starBreakdown(summary)}`,
+            `📊 ${summary.rating_total.toLocaleString(LOCALE)} ratings | ${starBreakdown(summary)}`,
           );
           const extras = [
             summary.rcount_with_context !== undefined
-              ? `${summary.rcount_with_context.toLocaleString('id-ID')} with comments`
+              ? `${summary.rcount_with_context.toLocaleString(LOCALE)} with comments`
               : '',
             summary.rcount_with_media !== undefined
-              ? `${summary.rcount_with_media.toLocaleString('id-ID')} with media`
+              ? `${summary.rcount_with_media.toLocaleString(LOCALE)} with media`
               : '',
           ].filter(Boolean);
           if (extras.length) lines.push(`   ${extras.join(' | ')}`);

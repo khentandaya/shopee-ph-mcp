@@ -1,7 +1,14 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { ShopeeAPIError, requireLogin, shopeeUrl } from '../api/client.js';
-import { BASE_URL, CURRENCY, TIMEZONE, captureAll, waitForCollected } from '../browser/session.js';
+import {
+  BASE_URL,
+  CURRENCY,
+  LOCALE,
+  TIMEZONE,
+  captureAll,
+  waitForCollected,
+} from '../browser/session.js';
 import type { CollectedResponse } from '../browser/session.js';
 import { cache } from '../utils/cache.js';
 import { withErrorHandling } from '../utils/errors.js';
@@ -52,7 +59,7 @@ export function flashStockText(it: FlashSaleItem): string {
   const sold = Math.max(0, it.flash_sale_stock - it.stock);
   return it.stock === 0
     ? '🔥 Sold out'
-    : `📦 ${sold.toLocaleString('id-ID')}/${it.flash_sale_stock.toLocaleString('id-ID')} claimed`;
+    : `📦 ${sold.toLocaleString(LOCALE)}/${it.flash_sale_stock.toLocaleString(LOCALE)} claimed`;
 }
 
 export function registerFlashSaleTools(server: McpServer): void {

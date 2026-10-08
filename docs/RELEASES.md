@@ -1,46 +1,15 @@
 # Releases and versioning
 
-This project uses **Semantic Versioning** ([SemVer 2.0](https://semver.org/)) for the **npm package**. The canonical version string is **`package.json`** → `version`.
+This fork is distributed from source at [khentandaya/shopee-ph-mcp](https://github.com/khentandaya/shopee-ph-mcp). It is not published as an npm package. The package is marked `private` to prevent accidental npm publication, and the upstream npm publishing workflow is not used.
 
-Commit messages follow **[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)** (`feat:`, `fix:`, `docs:`, `chore:`, …). That pairs with SemVer: `fix` → PATCH, `feat` → MINOR, breaking changes → MAJOR.
+The existing Git history and upstream changelog entries retain their original attribution. Upstream release numbers describe the upstream project; do not imply that this fork owns or publishes `@bintangtimurlangit/shopee-mcp`.
 
-## Version format
+For a fork release:
 
-`MAJOR.MINOR.PATCH` — e.g. `0.1.0`, `1.2.3`.
+1. Update `package.json` and the root package metadata in `package-lock.json` together if the version changes.
+2. Record the fork's changes in `CHANGELOG.md`, preserving historical entries.
+3. Run the offline checks and build listed in [Development](./DEVELOPMENT.md).
+4. Review the staged files and Git history for credentials, browser profiles, private account data and temporary files.
+5. Create a descriptive Git tag and GitHub release only when ready to publish that version. State which checks ran and whether live tests were performed.
 
-- **MAJOR** — Breaking changes (removed/renamed tools, incompatible env or behavior).
-- **MINOR** — Backward-compatible features (new tools, new optional config).
-- **PATCH** — Bug fixes and safe corrections that do not change the public contract.
-
-## npm dist-tags
-
-| Tag      | Typical use                                                          |
-| -------- | -------------------------------------------------------------------- |
-| `latest` | Default stable install: `npm install @bintangtimurlangit/shopee-mcp` |
-| `beta`   | Optional prereleases: `npm publish --tag beta` with `X.Y.Z-beta.N`   |
-
-Scoped packages use **`"publishConfig": { "access": "public" }`**.
-
-## Publishing (maintainers)
-
-Releases are **automated** by the [`release` workflow](../.github/workflows/release.yml): pushing a `vX.Y.Z` tag runs typecheck + build and publishes to npm (with [provenance](https://docs.npmjs.com/generating-provenance-statements)), then creates a GitHub release.
-
-**One-time setup:** add an npm **automation token** as the repo secret **`NPM_TOKEN`**. Without it, the workflow still builds but skips publish.
-
-**To cut a release:**
-
-1. Bump **`version`** in **`package.json`** per SemVer.
-2. Update **`CHANGELOG.md`**: move items from **`[Unreleased]`** into **`[X.Y.Z] - YYYY-MM-DD`**.
-3. Commit with Conventional Commits, e.g. `chore(release): v0.1.1`.
-4. Tag and push:
-
-   ```bash
-   git tag v0.1.1
-   git push origin main --tags
-   ```
-
-5. The workflow publishes to npm and opens the GitHub release.
-
-## Git tags
-
-Tag stable releases as **`vX.Y.Z`**; prereleases **`vX.Y.Z-beta.N`**.
+Use [Semantic Versioning](https://semver.org/) for future version changes. Publishing to npm would require a separate, deliberate package-name and release-process decision.

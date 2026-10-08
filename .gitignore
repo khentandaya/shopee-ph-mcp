@@ -1,6 +1,77 @@
+# Dependencies, generated output and downloaded browsers
 node_modules/
 build/
-.env
-.cursor/mcp.json
+dist/
+coverage/
+.cache/
+.cloakbrowser/
+cloakbrowser-cache/
+ms-playwright/
+playwright/.cache/
 *.js.map
 *.d.ts.map
+*.tsbuildinfo
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+.npmrc
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*.json
+secrets*.json
+.cursor/
+.vscode/
+.idea/
+.claude/
+.codex/
+.opencode/
+mcp.json
+opencode.json*
+
+# Browser profiles, authentication state and captures
+.shopee-mcp/
+.auth/
+chrome-profile*/
+browser-profile*/
+user-data*/
+profiles/
+Cookies*
+cookies*
+cookie*.json
+cookie*.txt
+Local State
+Login Data*
+Web Data*
+History*
+Local Storage/
+Session Storage/
+IndexedDB/
+storage-state*.json
+storageState*.json
+auth-state*.json
+*.har
+*.sqlite*
+*.db*
+playwright-report/
+test-results/
+screenshots/
+traces/
+
+# Local scratch files and logs
+work/
+tmp/
+temp/
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*.zip
+*.tgz
+*.7z
+.DS_Store
+Thumbs.db

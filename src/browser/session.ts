@@ -27,6 +27,7 @@ const REGION_DEFAULTS: Record<string, Region> = {
   '.my': { locale: 'en-MY', timezone: 'Asia/Kuala_Lumpur', currency: 'MYR' },
   '.sg': { locale: 'en-SG', timezone: 'Asia/Singapore', currency: 'SGD' },
   '.tw': { locale: 'zh-TW', timezone: 'Asia/Taipei', currency: 'TWD' },
+  '.ph': { locale: 'en-PH', timezone: 'Asia/Manila', currency: 'PHP' },
 };
 
 // Falls back to the Indonesian defaults, matching the default SHOPEE_DOMAIN.

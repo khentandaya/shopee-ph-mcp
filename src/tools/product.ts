@@ -1,7 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { shopeeCapture, shopeeUrl } from '../api/client.js';
-import { BASE_URL, CURRENCY } from '../browser/session.js';
+import { BASE_URL, CURRENCY, LOCALE } from '../browser/session.js';
 import { cache } from '../utils/cache.js';
 import { withErrorHandling, truncate } from '../utils/errors.js';
 import { formatPrice } from '../utils/price.js';
@@ -94,7 +94,7 @@ export function sellerLines(shop: PdpShop | null | undefined): string[] {
     shop.rating_star ? `⭐ ${shop.rating_star.toFixed(1)}` : '',
     shop.response_rate !== undefined ? `💬 ${shop.response_rate}% response` : '',
     shop.follower_count !== undefined
-      ? `👥 ${shop.follower_count.toLocaleString('id-ID')} followers`
+      ? `👥 ${shop.follower_count.toLocaleString(LOCALE)} followers`
       : '',
   ].filter(Boolean);
   return [
@@ -187,7 +187,7 @@ export function registerProductTools(server: McpServer): void {
           `💰 **Price:** ${price}${before ? ` ~~${priceText(before, currency)}~~ (-${discountPct}%)` : ''}`,
           '',
           `📊 **Stats:**`,
-          `  ⭐ Rating: ${rating ? rating.toFixed(2) : 'N/A'}${ratingCount ? ` (${ratingCount.toLocaleString('id-ID')} reviews)` : ''}`,
+          `  ⭐ Rating: ${rating ? rating.toFixed(2) : 'N/A'}${ratingCount ? ` (${ratingCount.toLocaleString(LOCALE)} reviews)` : ''}`,
           soldText ? `  ✅ Sold: ${soldText}` : '',
           '',
           `📋 **Details:**`,
@@ -195,7 +195,7 @@ export function registerProductTools(server: McpServer): void {
           `  🆕 Condition: ${conditionLabel}`,
           breadcrumb ? `  🗂 Category: ${breadcrumb}` : '',
           stock !== undefined && stock !== null
-            ? `  📦 Stock: ${stock.toLocaleString('id-ID')}`
+            ? `  📦 Stock: ${stock.toLocaleString(LOCALE)}`
             : '',
           item.is_free_shipping ? `  🚚 Free shipping` : '',
           `  📍 Location: ${item.shop_location || 'N/A'}`,

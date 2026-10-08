@@ -1,31 +1,35 @@
 # Security
 
-## Supported versions
+Security fixes target the current `main` branch of this Philippines adaptation.
 
-Security fixes are applied to the **latest release** on the default branch when practical.
+## Report a vulnerability
 
-## Reporting a vulnerability
+Use this repository's **Security → Report a vulnerability** feature.
+Do not put exploit details, credentials, private account data or browser files in public issues.
+If private reporting is unavailable, open an issue requesting a private reporting channel without disclosing sensitive details.
+Include the affected commit, impact and a minimal reproduction with synthetic data.
+Report upstream dependency issues to their respective maintainers.
 
-Please **do not** open a public GitHub issue for undisclosed security problems.
+## Session and account data
 
-1. Use [GitHub private vulnerability reporting](https://github.com/bintangtimurlangit/shopee-mcp/security/advisories/new) if it is enabled for this repository, **or**
-2. Contact the maintainers via a private channel (e.g. email on your GitHub profile).
+- The persistent browser profile contains login cookies and other sensitive state. Treat it like a password. Use a dedicated directory outside the checkout; see [setup](README.md#installation).
+- Browser profile files stay on your machine, but the authenticated browser sends session credentials to Shopee. Tool results are passed to your MCP client and may be logged or sent to its model provider.
+- `SHOPEE_ACCOUNT_TOOLS=off` disables all account tools while preserving product discovery. The sample setup selects `off`; the underlying source defaults to `auto`.
+- In `auto` mode, login exposes private orders, cart, vouchers, coins and notifications, plus tools to add/update/remove cart items, like/unlike products, follow/unfollow shops and claim vouchers. A voucher claim cannot be undone. The server does not implement checkout or payment.
+- Tool annotations are hints, not an approval system. Use a trusted MCP client with approval controls before enabling account actions.
+- Use a dedicated browser profile and an unprivileged OS account. The inherited browser launch includes `--no-sandbox`, so do not rely on Chromium sandbox isolation or expose this local stdio server as a public service.
+- Stop clients using the profile before running login or another server instance. Do not delete a profile to resolve a lock while it is in use.
 
-Include:
+## Keep private files out of Git
 
-- A short description of the issue and its impact
-- Steps to reproduce (or a proof-of-concept), if safe to share
-- Affected versions or dependency versions, if known
+Never commit `.env` files, real MCP/client configs, browser profiles, cookies, saved storage state, private keys, account exports, HAR files, screenshots containing personal data or debug logs. `.env.example` contains configuration examples only.
 
-We aim to acknowledge reports within a few days and coordinate disclosure after a fix is available.
+The ignore rules cover common names, but cannot recognize sensitive data saved under arbitrary filenames. Before every push, review `git status --short`, `git diff --cached --name-only` and `git diff --cached`; never force-add ignored private files. Keep downloaded browsers and `node_modules` out of commits and release archives.
 
-## Scope and credential handling
+If credentials or session data are exposed, revoke the affected credentials or sessions first. Removing a file in a later commit does not remove it from Git history, forks or caches. Coordinate history cleanup with maintainers and GitHub support where needed.
 
-This is a **local MCP server** that reads **public** Shopee product data through a **logged-in browser session** (Shopee blocks anonymous requests). Be aware:
+## Testing and dependencies
 
-- Your **session lives on your machine** under `~/.shopee-mcp/chrome-profile` (configurable via `SHOPEE_PROFILE_DIR`). Treat that directory like a password. It is never transmitted anywhere by this server, and the repo **gitignores** local profile/state.
-- **Signed out, the server is read-only** — public product, review, shop and flash-sale lookups; no account actions.
-- **Signed in, experimental account mode** also offers tools that read your own data (orders, cart, vouchers, coins, notifications) and that **modify your account**: add/update/remove cart items, like/unlike products, follow/unfollow shops, and claim shop vouchers. Nothing in this server checks out, pays, changes addresses, payment methods or passwords, or sends chat messages; order detail omits your address and phone number.
-- Set `SHOPEE_ACCOUNT_TOOLS=off` to keep a logged-in server read-only. Only use account mode with an MCP client you trust to ask before acting — write tools are annotated `readOnlyHint: false` so clients can prompt for them.
+`npm run test:unit` is offline. `npm test` launches a browser and contacts Shopee; with account mode enabled it can read private account data. Do not use a real browser profile in CI. Sanitize error output before sharing it.
 
-Issues in **Shopee's services**, **CloakBrowser**, or **upstream** dependencies (e.g. `@modelcontextprotocol/sdk`, `playwright`) should be reported to those projects when appropriate.
+Dependencies retain their own licenses; the CloakBrowser binary has separate terms and is not redistributed here. See [ATTRIBUTION.md](ATTRIBUTION.md).
